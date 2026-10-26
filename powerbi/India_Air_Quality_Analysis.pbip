@@ -1,0 +1,13 @@
+{
+  "version": "1.0",
+  "artifacts": [
+    {
+      "report": {
+        "path": "India_Air_Quality_Analysis.Report"
+      }
+    }
+  ],
+  "settings": {
+    "enableAutoAuth": true
+  }
+}

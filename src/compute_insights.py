@@ -8,7 +8,10 @@ import csv
 from datetime import datetime
 from collections import defaultdict
 
-DATA_PATH = "/Users/suryajeetkashi/.gemini/antigravity/scratch/india-air-quality-analysis/data/raw/Indian_cities_daily_pollution_2015-2020.csv"
+import os
+
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+DATA_PATH = os.path.join(BASE_DIR, "data", "raw", "Indian_cities_daily_pollution_2015-2020.csv")
 
 # Helper to safely convert to float
 def to_float(val):

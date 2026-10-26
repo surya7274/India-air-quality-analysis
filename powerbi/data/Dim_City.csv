@@ -1,0 +1,27 @@
+City_Key,City,State,Region,Latitude,Longitude,Is_Metropolitan
+1,Ahmedabad,Gujarat,Western,23.0225,72.5714,1
+2,Aizawl,Mizoram,North Eastern,23.7271,92.7176,0
+3,Amaravati,Andhra Pradesh,Southern,16.5417,80.5158,0
+4,Amritsar,Punjab,Northern,31.634,74.8723,0
+5,Bengaluru,Karnataka,Southern,12.9716,77.5946,1
+6,Bhopal,Madhya Pradesh,Central,23.2599,77.4126,0
+7,Brajrajnagar,Odisha,Eastern,21.8247,83.9189,0
+8,Chandigarh,Chandigarh,Northern,30.7333,76.7794,0
+9,Chennai,Tamil Nadu,Southern,13.0827,80.2707,1
+10,Coimbatore,Tamil Nadu,Southern,11.0168,76.9558,0
+11,Delhi,Delhi,Northern,28.6139,77.209,1
+12,Ernakulam,Kerala,Southern,9.9816,76.2999,0
+13,Gurugram,Haryana,Northern,28.4595,77.0266,0
+14,Guwahati,Assam,North Eastern,26.1445,91.7362,0
+15,Hyderabad,Telangana,Southern,17.385,78.4867,1
+16,Jaipur,Rajasthan,Northern,26.9124,75.7873,0
+17,Jorapokhar,Jharkhand,Eastern,23.7042,86.4131,0
+18,Kochi,Kerala,Southern,9.9312,76.2673,0
+19,Kolkata,West Bengal,Eastern,22.5726,88.3639,1
+20,Lucknow,Uttar Pradesh,Northern,26.8467,80.9462,0
+21,Mumbai,Maharashtra,Western,19.076,72.8777,1
+22,Patna,Bihar,Eastern,25.5941,85.1376,0
+23,Shillong,Meghalaya,North Eastern,25.5788,91.8933,0
+24,Talcher,Odisha,Eastern,20.9509,85.2165,0
+25,Thiruvananthapuram,Kerala,Southern,8.5241,76.9366,0
+26,Visakhapatnam,Andhra Pradesh,Southern,17.6868,83.2185,0

@@ -1,0 +1,243 @@
+"""Generates Microsoft Power BI Project (.pbip) and Tabular Data Model (model.bim).
+This provides native Power BI desktop loading support.
+"""
+
+import json
+import os
+
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+PBIP_ROOT = os.path.join(BASE_DIR, "powerbi")
+REPORT_DIR = os.path.join(PBIP_ROOT, "India_Air_Quality_Analysis.Report")
+DATASET_DIR = os.path.join(PBIP_ROOT, "India_Air_Quality_Analysis.Dataset")
+
+os.makedirs(REPORT_DIR, exist_ok=True)
+os.makedirs(DATASET_DIR, exist_ok=True)
+
+# 1. Main .pbip file
+pbip_path = os.path.join(PBIP_ROOT, "India_Air_Quality_Analysis.pbip")
+pbip_content = {
+    "version": "1.0",
+    "artifacts": [
+        {
+            "report": {
+                "path": "India_Air_Quality_Analysis.Report"
+            }
+        }
+    ],
+    "settings": {
+        "enableAutoAuth": True
+    }
+}
+with open(pbip_path, "w", encoding="utf-8") as f:
+    json.dump(pbip_content, f, indent=2)
+
+# 2. Report definition.pbir
+pbir_path = os.path.join(REPORT_DIR, "definition.pbir")
+pbir_content = {
+    "version": "1.0",
+    "datasetReference": {
+        "byPath": {
+            "path": "../India_Air_Quality_Analysis.Dataset"
+        },
+        "byConnection": None
+    }
+}
+with open(pbir_path, "w", encoding="utf-8") as f:
+    json.dump(pbir_content, f, indent=2)
+
+# 3. Dataset definition.pbidataset
+pbidataset_path = os.path.join(DATASET_DIR, "definition.pbidataset")
+pbidataset_content = {
+    "version": "1.0"
+}
+with open(pbidataset_path, "w", encoding="utf-8") as f:
+    json.dump(pbidataset_content, f, indent=2)
+
+# 4. Tabular Model (model.bim)
+model_bim = {
+    "name": "India_Air_Quality_Analysis",
+    "compatibilityLevel": 1550,
+    "model": {
+        "culture": "en-US",
+        "dataSources": [
+            {
+                "type": "structured",
+                "name": "DataFolder",
+                "connectionDetails": {
+                    "protocol": "file"
+                }
+            }
+        ],
+        "tables": [
+            {
+                "name": "Dim_City",
+                "columns": [
+                    {"name": "City_Key", "dataType": "int64", "sourceColumn": "City_Key"},
+                    {"name": "City", "dataType": "string", "sourceColumn": "City", "dataCategory": "City"},
+                    {"name": "State", "dataType": "string", "sourceColumn": "State", "dataCategory": "StateOrProvince"},
+                    {"name": "Region", "dataType": "string", "sourceColumn": "Region"},
+                    {"name": "Latitude", "dataType": "double", "sourceColumn": "Latitude", "dataCategory": "Latitude"},
+                    {"name": "Longitude", "dataType": "double", "sourceColumn": "Longitude", "dataCategory": "Longitude"},
+                    {"name": "Is_Metropolitan", "dataType": "int64", "sourceColumn": "Is_Metropolitan"}
+                ]
+            },
+            {
+                "name": "Dim_Date",
+                "dataCategory": "Time",
+                "columns": [
+                    {"name": "Date", "dataType": "dateTime", "sourceColumn": "Date", "isKey": True},
+                    {"name": "Year", "dataType": "int64", "sourceColumn": "Year"},
+                    {"name": "Quarter", "dataType": "int64", "sourceColumn": "Quarter"},
+                    {"name": "Quarter_Name", "dataType": "string", "sourceColumn": "Quarter_Name"},
+                    {"name": "Month", "dataType": "int64", "sourceColumn": "Month"},
+                    {"name": "Month_Name", "dataType": "string", "sourceColumn": "Month_Name", "sortByColumn": "Month"},
+                    {"name": "Month_Short", "dataType": "string", "sourceColumn": "Month_Short", "sortByColumn": "Month"},
+                    {"name": "Year_Month", "dataType": "string", "sourceColumn": "Year_Month"},
+                    {"name": "Day", "dataType": "int64", "sourceColumn": "Day"},
+                    {"name": "Day_Of_Week", "dataType": "string", "sourceColumn": "Day_Of_Week", "sortByColumn": "Day_Of_Week_Number"},
+                    {"name": "Day_Of_Week_Number", "dataType": "int64", "sourceColumn": "Day_Of_Week_Number"},
+                    {"name": "Is_Weekend", "dataType": "int64", "sourceColumn": "Is_Weekend"},
+                    {"name": "Season", "dataType": "string", "sourceColumn": "Season"},
+                    {"name": "Lockdown_Phase", "dataType": "string", "sourceColumn": "Lockdown_Phase"},
+                    {"name": "Is_Lockdown", "dataType": "int64", "sourceColumn": "Is_Lockdown"}
+                ]
+            },
+            {
+                "name": "Dim_AQI_Category",
+                "columns": [
+                    {"name": "Category_Key", "dataType": "int64", "sourceColumn": "Category_Key"},
+                    {"name": "Category_Name", "dataType": "string", "sourceColumn": "Category_Name", "sortByColumn": "Category_Key"},
+                    {"name": "AQI_Min", "dataType": "int64", "sourceColumn": "AQI_Min"},
+                    {"name": "AQI_Max", "dataType": "int64", "sourceColumn": "AQI_Max"},
+                    {"name": "Color_Hex", "dataType": "string", "sourceColumn": "Color_Hex"},
+                    {"name": "Health_Impact", "dataType": "string", "sourceColumn": "Health_Impact"}
+                ]
+            },
+            {
+                "name": "Dim_Pollutant",
+                "columns": [
+                    {"name": "Pollutant_Code", "dataType": "string", "sourceColumn": "Pollutant_Code"},
+                    {"name": "Pollutant_Name", "dataType": "string", "sourceColumn": "Pollutant_Name"},
+                    {"name": "Unit", "dataType": "string", "sourceColumn": "Unit"},
+                    {"name": "CPCB_Limit_24hr", "dataType": "double", "sourceColumn": "CPCB_Limit_24hr"},
+                    {"name": "WHO_Limit_24hr", "dataType": "double", "sourceColumn": "WHO_Limit_24hr"},
+                    {"name": "Primary_Sources", "dataType": "string", "sourceColumn": "Primary_Sources"}
+                ]
+            },
+            {
+                "name": "Fact_Daily_Readings",
+                "columns": [
+                    {"name": "Reading_ID", "dataType": "int64", "sourceColumn": "Reading_ID"},
+                    {"name": "Date", "dataType": "dateTime", "sourceColumn": "Date"},
+                    {"name": "City", "dataType": "string", "sourceColumn": "City"},
+                    {"name": "State", "dataType": "string", "sourceColumn": "State"},
+                    {"name": "Region", "dataType": "string", "sourceColumn": "Region"},
+                    {"name": "PM2.5", "dataType": "double", "sourceColumn": "PM2.5"},
+                    {"name": "PM10", "dataType": "double", "sourceColumn": "PM10"},
+                    {"name": "NO", "dataType": "double", "sourceColumn": "NO"},
+                    {"name": "NO2", "dataType": "double", "sourceColumn": "NO2"},
+                    {"name": "NOx", "dataType": "double", "sourceColumn": "NOx"},
+                    {"name": "NH3", "dataType": "double", "sourceColumn": "NH3"},
+                    {"name": "CO", "dataType": "double", "sourceColumn": "CO"},
+                    {"name": "SO2", "dataType": "double", "sourceColumn": "SO2"},
+                    {"name": "O3", "dataType": "double", "sourceColumn": "O3"},
+                    {"name": "Benzene", "dataType": "double", "sourceColumn": "Benzene"},
+                    {"name": "Toluene", "dataType": "double", "sourceColumn": "Toluene"},
+                    {"name": "AQI", "dataType": "double", "sourceColumn": "AQI"},
+                    {"name": "AQI_Category", "dataType": "string", "sourceColumn": "AQI_Category"},
+                    {"name": "PM25_PM10_Ratio", "dataType": "double", "sourceColumn": "PM25_PM10_Ratio"},
+                    {"name": "NAAQS_Exceed", "dataType": "int64", "sourceColumn": "NAAQS_Exceed"},
+                    {"name": "WHO_Exceed", "dataType": "int64", "sourceColumn": "WHO_Exceed"},
+                    {"name": "Rolling_7Day_AQI", "dataType": "double", "sourceColumn": "Rolling_7Day_AQI"},
+                    {"name": "Rolling_30Day_AQI", "dataType": "double", "sourceColumn": "Rolling_30Day_AQI"},
+                    {"name": "Lockdown_Flag", "dataType": "int64", "sourceColumn": "Lockdown_Flag"},
+                    {"name": "Lockdown_Phase", "dataType": "string", "sourceColumn": "Lockdown_Phase"},
+                    {"name": "Dominant_Pollutant", "dataType": "string", "sourceColumn": "Dominant_Pollutant"},
+                    {"name": "City_Year_Rank", "dataType": "int64", "sourceColumn": "City_Year_Rank"}
+                ],
+                "measures": [
+                    {"name": "Total Readings", "expression": "COUNTROWS(Fact_Daily_Readings)", "formatString": "#,##0"},
+                    {"name": "Total Cities Monitored", "expression": "DISTINCTCOUNT(Fact_Daily_Readings[City])", "formatString": "0"},
+                    {"name": "Average AQI", "expression": "AVERAGE(Fact_Daily_Readings[AQI])", "formatString": "0.0"},
+                    {"name": "Median AQI", "expression": "MEDIAN(Fact_Daily_Readings[AQI])", "formatString": "0.0"},
+                    {"name": "Severe Days Count", "expression": "CALCULATE(COUNTROWS(Fact_Daily_Readings), Fact_Daily_Readings[AQI_Category] = \"Severe\")", "formatString": "#,##0"},
+                    {"name": "Very Poor Days Count", "expression": "CALCULATE(COUNTROWS(Fact_Daily_Readings), Fact_Daily_Readings[AQI_Category] = \"Very Poor\")", "formatString": "#,##0"},
+                    {"name": "Hazardous Days Count", "expression": "[Severe Days Count] + [Very Poor Days Count]", "formatString": "#,##0"},
+                    {"name": "% Hazardous Days", "expression": "DIVIDE([Hazardous Days Count], [Total Readings], 0)", "formatString": "0.0%"},
+                    {"name": "% NAAQS Exceedance Rate", "expression": "DIVIDE(CALCULATE(COUNTROWS(Fact_Daily_Readings), Fact_Daily_Readings[NAAQS_Exceed] = 1), [Total Readings], 0)", "formatString": "0.0%"},
+                    {"name": "% WHO Exceedance Rate", "expression": "DIVIDE(CALCULATE(COUNTROWS(Fact_Daily_Readings), Fact_Daily_Readings[WHO_Exceed] = 1), [Total Readings], 0)", "formatString": "0.0%"},
+                    {"name": "AQI Previous Year", "expression": "CALCULATE([Average AQI], SAMEPERIODLASTYEAR(Dim_Date[Date]))", "formatString": "0.0"},
+                    {"name": "AQI YoY % Change", "expression": "DIVIDE([Average AQI] - [AQI Previous Year], [AQI Previous Year], BLANK())", "formatString": "0.0%"},
+                    {"name": "Winter Avg AQI", "expression": "CALCULATE([Average AQI], Dim_Date[Season] = \"Winter\")", "formatString": "0.0"},
+                    {"name": "Monsoon Avg AQI", "expression": "CALCULATE([Average AQI], Dim_Date[Season] = \"Monsoon\")", "formatString": "0.0"},
+                    {"name": "2020 Pre-Lockdown AQI", "expression": "CALCULATE([Average AQI], Dim_Date[Year] = 2020, Dim_Date[Date] < DATE(2020, 3, 24))", "formatString": "0.0"},
+                    {"name": "2020 Lockdown AQI", "expression": "CALCULATE([Average AQI], Dim_Date[Year] = 2020, Dim_Date[Date] >= DATE(2020, 3, 24), Dim_Date[Date] <= DATE(2020, 5, 31))", "formatString": "0.0"},
+                    {"name": "% Lockdown AQI Reduction", "expression": "DIVIDE([2020 Pre-Lockdown AQI] - [2020 Lockdown AQI], [2020 Pre-Lockdown AQI], 0)", "formatString": "0.0%"},
+                    {"name": "Average PM2.5", "expression": "AVERAGE(Fact_Daily_Readings[PM2.5])", "formatString": "0.0"},
+                    {"name": "Average PM10", "expression": "AVERAGE(Fact_Daily_Readings[PM10])", "formatString": "0.0"},
+                    {"name": "Average NO2", "expression": "AVERAGE(Fact_Daily_Readings[NO2])", "formatString": "0.0"},
+                    {"name": "Average SO2", "expression": "AVERAGE(Fact_Daily_Readings[SO2])", "formatString": "0.0"},
+                    {"name": "Average CO", "expression": "AVERAGE(Fact_Daily_Readings[CO])", "formatString": "0.0"},
+                    {"name": "Average O3", "expression": "AVERAGE(Fact_Daily_Readings[O3])", "formatString": "0.0"},
+                    {"name": "PM2.5 to PM10 Fine Ratio", "expression": "DIVIDE([Average PM2.5], [Average PM10], 0)", "formatString": "0.00"}
+                ]
+            },
+            {
+                "name": "Fact_Lockdown_Impact",
+                "columns": [
+                    {"name": "City", "dataType": "string", "sourceColumn": "City"},
+                    {"name": "State", "dataType": "string", "sourceColumn": "State"},
+                    {"name": "Region", "dataType": "string", "sourceColumn": "Region"},
+                    {"name": "Pre_Lockdown_AQI", "dataType": "double", "sourceColumn": "Pre_Lockdown_AQI"},
+                    {"name": "Lockdown_AQI", "dataType": "double", "sourceColumn": "Lockdown_AQI"},
+                    {"name": "Post_Lockdown_AQI", "dataType": "double", "sourceColumn": "Post_Lockdown_AQI"},
+                    {"name": "AQI_Drop_Points", "dataType": "double", "sourceColumn": "AQI_Drop_Points"},
+                    {"name": "Pct_AQI_Reduction", "dataType": "double", "sourceColumn": "Pct_AQI_Reduction"},
+                    {"name": "Pre_Lockdown_PM25", "dataType": "double", "sourceColumn": "Pre_Lockdown_PM25"},
+                    {"name": "Lockdown_PM25", "dataType": "double", "sourceColumn": "Lockdown_PM25"},
+                    {"name": "Pct_PM25_Drop", "dataType": "double", "sourceColumn": "Pct_PM25_Drop"},
+                    {"name": "Pre_Lockdown_NO2", "dataType": "double", "sourceColumn": "Pre_Lockdown_NO2"},
+                    {"name": "Lockdown_NO2", "dataType": "double", "sourceColumn": "Lockdown_NO2"},
+                    {"name": "Pct_NO2_Drop", "dataType": "double", "sourceColumn": "Pct_NO2_Drop"}
+                ]
+            }
+        ],
+        "relationships": [
+            {
+                "name": "Rel_Fact_City",
+                "fromTable": "Fact_Daily_Readings",
+                "fromColumn": "City",
+                "toTable": "Dim_City",
+                "toColumn": "City"
+            },
+            {
+                "name": "Rel_Fact_Date",
+                "fromTable": "Fact_Daily_Readings",
+                "fromColumn": "Date",
+                "toTable": "Dim_Date",
+                "toColumn": "Date"
+            },
+            {
+                "name": "Rel_Fact_AQI_Category",
+                "fromTable": "Fact_Daily_Readings",
+                "fromColumn": "AQI_Category",
+                "toTable": "Dim_AQI_Category",
+                "toColumn": "Category_Name"
+            },
+            {
+                "name": "Rel_Lockdown_City",
+                "fromTable": "Fact_Lockdown_Impact",
+                "fromColumn": "City",
+                "toTable": "Dim_City",
+                "toColumn": "City"
+            }
+        ]
+    }
+}
+
+bim_path = os.path.join(DATASET_DIR, "model.bim")
+with open(bim_path, "w", encoding="utf-8") as f:
+    json.dump(model_bim, f, indent=2)
+
+print(f"✅ Created Power BI Project: {pbip_path}")
+print(f"✅ Created Tabular Model BIM: {bim_path}")

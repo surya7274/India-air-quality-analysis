@@ -1,0 +1,370 @@
+// ==============================================================================
+// INDIA AIR QUALITY ANALYSIS (2015 - 2020)
+// POWER BI DAX MEASURES LIBRARY
+// ==============================================================================
+
+// ------------------------------------------------------------------------------
+// 1. CORE VOLUME & AQI SUMMARY MEASURES
+// ------------------------------------------------------------------------------
+
+[Total Readings] = 
+COUNTROWS(Fact_Daily_Readings)
+
+[Total Cities Monitored] = 
+DISTINCTCOUNT(Fact_Daily_Readings[City])
+
+[Total States Monitored] = 
+DISTINCTCOUNT(Fact_Daily_Readings[State])
+
+[Average AQI] = 
+AVERAGE(Fact_Daily_Readings[AQI])
+
+[Median AQI] = 
+MEDIAN(Fact_Daily_Readings[AQI])
+
+[Min AQI] = 
+MIN(Fact_Daily_Readings[AQI])
+
+[Max AQI] = 
+MAX(Fact_Daily_Readings[AQI])
+
+// Dynamic formatting color based on CPCB AQI standards
+[AQI KPI Status Color] = 
+VAR CurrentAQI = [Average AQI]
+RETURN
+    SWITCH(
+        TRUE(),
+        ISBLANK(CurrentAQI), "#CCCCCC",
+        CurrentAQI <= 50, "#00E400",     // Good (Green)
+        CurrentAQI <= 100, "#92D050",    // Satisfactory (Light Green)
+        CurrentAQI <= 200, "#FFFF00",    // Moderate (Yellow)
+        CurrentAQI <= 300, "#FF7E00",    // Poor (Orange)
+        CurrentAQI <= 400, "#FF0000",    // Very Poor (Red)
+        "#7E0023"                         // Severe (Maroon)
+    )
+
+[AQI KPI Text Color] = 
+VAR CurrentAQI = [Average AQI]
+RETURN
+    SWITCH(
+        TRUE(),
+        CurrentAQI <= 100, "#000000",
+        CurrentAQI <= 200, "#333333",
+        "#FFFFFF"
+    )
+
+[AQI Health Status] = 
+VAR CurrentAQI = [Average AQI]
+RETURN
+    SWITCH(
+        TRUE(),
+        ISBLANK(CurrentAQI), "No Data",
+        CurrentAQI <= 50, "Good - Clean Air",
+        CurrentAQI <= 100, "Satisfactory - Acceptable",
+        CurrentAQI <= 200, "Moderate - Sensitive Caution",
+        CurrentAQI <= 300, "Poor - Unhealthy",
+        CurrentAQI <= 400, "Very Poor - Hazardous",
+        "Severe - Emergency Alert"
+    )
+
+// ------------------------------------------------------------------------------
+// 2. CPCB & WHO COMPLIANCE AND HAZARD DAYS
+// ------------------------------------------------------------------------------
+
+[Severe Days Count] = 
+CALCULATE(
+    COUNTROWS(Fact_Daily_Readings),
+    Fact_Daily_Readings[AQI_Category] = "Severe"
+)
+
+[Very Poor Days Count] = 
+CALCULATE(
+    COUNTROWS(Fact_Daily_Readings),
+    Fact_Daily_Readings[AQI_Category] = "Very Poor"
+)
+
+[Hazardous Days Count] = 
+[Severe Days Count] + [Very Poor Days Count]
+
+[% Hazardous Days] = 
+DIVIDE([Hazardous Days Count], [Total Readings], 0)
+
+[Good Air Days Count] = 
+CALCULATE(
+    COUNTROWS(Fact_Daily_Readings),
+    Fact_Daily_Readings[AQI_Category] = "Good"
+)
+
+[% Good Air Days] = 
+DIVIDE([Good Air Days Count], [Total Readings], 0)
+
+// CPCB NAAQS Exceedance: PM2.5 > 60 µg/m³ or PM10 > 100 µg/m³
+[NAAQS Exceed Days Count] = 
+CALCULATE(
+    COUNTROWS(Fact_Daily_Readings),
+    Fact_Daily_Readings[NAAQS_Exceed] = 1
+)
+
+[% NAAQS Exceedance Rate] = 
+DIVIDE([NAAQS Exceed Days Count], [Total Readings], 0)
+
+// WHO 24hr Limit Exceedance: PM2.5 > 15 µg/m³
+[WHO Exceed Days Count] = 
+CALCULATE(
+    COUNTROWS(Fact_Daily_Readings),
+    Fact_Daily_Readings[WHO_Exceed] = 1
+)
+
+[% WHO Exceedance Rate] = 
+DIVIDE([WHO Exceed Days Count], [Total Readings], 0)
+
+// Chronic Bad Air Days (AQI > 150)
+[Chronic Bad Days Count] = 
+CALCULATE(
+    COUNTROWS(Fact_Daily_Readings),
+    Fact_Daily_Readings[AQI] > 150
+)
+
+[% Chronic Bad Air Rate] = 
+DIVIDE([Chronic Bad Days Count], [Total Readings], 0)
+
+// ------------------------------------------------------------------------------
+// 3. TIME INTELLIGENCE & ROLLING AVERAGES
+// ------------------------------------------------------------------------------
+
+[AQI Previous Year] = 
+CALCULATE(
+    [Average AQI],
+    SAMEPERIODLASTYEAR(Dim_Date[Date])
+)
+
+[AQI YoY Change] = 
+VAR CurrentAQI = [Average AQI]
+VAR PriorAQI = [AQI Previous Year]
+RETURN
+    IF(
+        NOT(ISBLANK(CurrentAQI)) && NOT(ISBLANK(PriorAQI)),
+        CurrentAQI - PriorAQI,
+        BLANK()
+    )
+
+[AQI YoY % Change] = 
+VAR CurrentAQI = [Average AQI]
+VAR PriorAQI = [AQI Previous Year]
+RETURN
+    DIVIDE(CurrentAQI - PriorAQI, PriorAQI, BLANK())
+
+[AQI Trend Status] = 
+VAR Change = [AQI YoY Change]
+RETURN
+    SWITCH(
+        TRUE(),
+        ISBLANK(Change), "Baseline",
+        Change < -5, "Improving 🟢",
+        Change > 5, "Worsening 🔴",
+        "Stable ⚪"
+    )
+
+// 7-day & 30-day rolling averages calculated dynamically over Dim_Date
+[Dynamic Rolling 7D AQI] = 
+CALCULATE(
+    AVERAGE(Fact_Daily_Readings[AQI]),
+    DATESINPERIOD(Dim_Date[Date], MAX(Dim_Date[Date]), -7, DAY)
+)
+
+[Dynamic Rolling 30D AQI] = 
+CALCULATE(
+    AVERAGE(Fact_Daily_Readings[AQI]),
+    DATESINPERIOD(Dim_Date[Date], MAX(Dim_Date[Date]), -30, DAY)
+)
+
+// Cumulative Chronic Bad Air Days (Running Total over Date)
+[Cumulative Bad Days Running Total] = 
+CALCULATE(
+    [Chronic Bad Days Count],
+    FILTER(
+        ALLSELECTED(Dim_Date[Date]),
+        Dim_Date[Date] <= MAX(Dim_Date[Date])
+    )
+)
+
+// ------------------------------------------------------------------------------
+// 4. SEASONAL & STUBBLE BURNING (OCT-NOV) ANALYSIS
+// ------------------------------------------------------------------------------
+
+[Winter Avg AQI] = 
+CALCULATE(
+    [Average AQI],
+    Dim_Date[Season] = "Winter"
+)
+
+[Monsoon Avg AQI] = 
+CALCULATE(
+    [Average AQI],
+    Dim_Date[Season] = "Monsoon"
+)
+
+[Seasonal Pollution Ratio (Winter/Monsoon)] = 
+DIVIDE([Winter Avg AQI], [Monsoon Avg AQI], 0)
+
+[Stubble Burning Oct-Nov AQI] = 
+CALCULATE(
+    [Average AQI],
+    Dim_Date[Month] IN {10, 11}
+)
+
+[Weekday Avg AQI] = 
+CALCULATE(
+    [Average AQI],
+    Dim_Date[Is_Weekend] = 0
+)
+
+[Weekend Avg AQI] = 
+CALCULATE(
+    [Average AQI],
+    Dim_Date[Is_Weekend] = 1
+)
+
+[Weekday vs Weekend Diff] = 
+[Weekday Avg AQI] - [Weekend Avg AQI]
+
+// ------------------------------------------------------------------------------
+// 5. COVID-19 LOCKDOWN IMPACT (2020 NATURAL EXPERIMENT)
+// ------------------------------------------------------------------------------
+
+[2020 Pre-Lockdown AQI] = 
+CALCULATE(
+    [Average AQI],
+    Dim_Date[Year] = 2020,
+    Dim_Date[Date] < DATE(2020, 3, 24)
+)
+
+[2020 Lockdown AQI] = 
+CALCULATE(
+    [Average AQI],
+    Dim_Date[Year] = 2020,
+    Dim_Date[Date] >= DATE(2020, 3, 24),
+    Dim_Date[Date] <= DATE(2020, 5, 31)
+)
+
+[2020 Post-Lockdown AQI] = 
+CALCULATE(
+    [Average AQI],
+    Dim_Date[Year] = 2020,
+    Dim_Date[Date] > DATE(2020, 5, 31)
+)
+
+[Lockdown AQI Absolute Drop] = 
+VAR Pre = [2020 Pre-Lockdown AQI]
+VAR Lock = [2020 Lockdown AQI]
+RETURN
+    IF(NOT(ISBLANK(Pre)) && NOT(ISBLANK(Lock)), Pre - Lock, BLANK())
+
+[% Lockdown AQI Reduction] = 
+DIVIDE([Lockdown AQI Absolute Drop], [2020 Pre-Lockdown AQI], 0)
+
+[2020 Pre-Lockdown PM2.5] = 
+CALCULATE(
+    AVERAGE(Fact_Daily_Readings[PM2.5]),
+    Dim_Date[Year] = 2020,
+    Dim_Date[Date] < DATE(2020, 3, 24)
+)
+
+[2020 Lockdown PM2.5] = 
+CALCULATE(
+    AVERAGE(Fact_Daily_Readings[PM2.5]),
+    Dim_Date[Year] = 2020,
+    Dim_Date[Date] >= DATE(2020, 3, 24),
+    Dim_Date[Date] <= DATE(2020, 5, 31)
+)
+
+[% Lockdown PM2.5 Reduction] = 
+DIVIDE([2020 Pre-Lockdown PM2.5] - [2020 Lockdown PM2.5], [2020 Pre-Lockdown PM2.5], 0)
+
+[2020 Pre-Lockdown NO2] = 
+CALCULATE(
+    AVERAGE(Fact_Daily_Readings[NO2]),
+    Dim_Date[Year] = 2020,
+    Dim_Date[Date] < DATE(2020, 3, 24)
+)
+
+[2020 Lockdown NO2] = 
+CALCULATE(
+    AVERAGE(Fact_Daily_Readings[NO2]),
+    Dim_Date[Year] = 2020,
+    Dim_Date[Date] >= DATE(2020, 3, 24),
+    Dim_Date[Date] <= DATE(2020, 5, 31)
+)
+
+[% Lockdown NO2 Reduction] = 
+DIVIDE([2020 Pre-Lockdown NO2] - [2020 Lockdown NO2], [2020 Pre-Lockdown NO2], 0)
+
+// ------------------------------------------------------------------------------
+// 6. POLLUTANT METRICS & RATIOS
+// ------------------------------------------------------------------------------
+
+[Average PM2.5] = AVERAGE(Fact_Daily_Readings[PM2.5])
+[Average PM10]  = AVERAGE(Fact_Daily_Readings[PM10])
+[Average NO2]   = AVERAGE(Fact_Daily_Readings[NO2])
+[Average SO2]   = AVERAGE(Fact_Daily_Readings[SO2])
+[Average CO]    = AVERAGE(Fact_Daily_Readings[CO])
+[Average O3]    = AVERAGE(Fact_Daily_Readings[O3])
+[Average NH3]   = AVERAGE(Fact_Daily_Readings[NH3])
+
+[PM2.5 to PM10 Fine Ratio] = 
+DIVIDE([Average PM2.5], [Average PM10], 0)
+
+// Ratio interpretation: > 0.6 indicates combustion/industrial emissions; < 0.4 indicates crustal/road dust
+[Particle Source Dominance] = 
+VAR Ratio = [PM2.5 to PM10 Fine Ratio]
+RETURN
+    SWITCH(
+        TRUE(),
+        ISBLANK(Ratio), "No Data",
+        Ratio >= 0.6, "Combustion / Vehicular Smoke (Fine)",
+        Ratio >= 0.45, "Mixed Urban Combustion & Dust",
+        "Windblown Dust / Construction / Crustal"
+    )
+
+// ------------------------------------------------------------------------------
+// 7. DYNAMIC TITLES & RANKINGS
+// ------------------------------------------------------------------------------
+
+[Selected City Label] = 
+IF(
+    ISFILTERED(Dim_City[City]),
+    SELECTEDVALUE(Dim_City[City], "Multiple Cities Selected"),
+    "All India (26 Cities Monitored)"
+)
+
+[Dynamic Report Title] = 
+"India Air Quality Performance Monitor | " & [Selected City Label] & 
+IF(
+    ISFILTERED(Dim_Date[Year]),
+    " (" & CONCATENATEX(VALUES(Dim_Date[Year]), Dim_Date[Year], ", ") & ")",
+    " (2015 - 2020 Full Cohort)"
+)
+
+[City AQI Rank] = 
+RANKX(
+    ALLSELECTED(Dim_City[City]),
+    [Average AQI],
+    ,
+    DESC,
+    Dense
+)
+
+[State AQI Rank] = 
+RANKX(
+    ALLSELECTED(Dim_City[State]),
+    [Average AQI],
+    ,
+    DESC,
+    Dense
+)
+
+[Cleanest 5-Year Improvement (2015 vs 2020)] = 
+VAR AQI2015 = CALCULATE([Average AQI], Dim_Date[Year] = 2015)
+VAR AQI2020 = CALCULATE([Average AQI], Dim_Date[Year] = 2020)
+RETURN
+    IF(NOT(ISBLANK(AQI2015)) && NOT(ISBLANK(AQI2020)), AQI2015 - AQI2020, BLANK())

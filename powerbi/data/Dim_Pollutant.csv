@@ -1,0 +1,12 @@
+Pollutant_Code,Pollutant_Name,Unit,CPCB_Limit_24hr,WHO_Limit_24hr,Primary_Sources
+PM2.5,Particulate Matter 2.5,µg/m³,60,15,"Vehicle emissions, biomass burning, industrial combustion"
+PM10,Particulate Matter 10,µg/m³,100,45,"Road dust, construction, agricultural burning"
+NO,Nitric Oxide,µg/m³,0,0,Combustion in motor vehicles and power plants
+NO2,Nitrogen Dioxide,µg/m³,80,25,"High-temperature fuel burning, heavy diesel transport"
+NOx,Total Nitrogen Oxides,µg/m³,80,30,Combined vehicular and industrial emissions
+NH3,Ammonia,µg/m³,400,0,"Agricultural fertilizers, animal waste, sewage"
+CO,Carbon Monoxide,mg/m³,2.0,4.0,"Incomplete fossil fuel combustion, urban traffic"
+SO2,Sulphur Dioxide,µg/m³,80,40,"Thermal power plants, coal burning, oil refineries"
+O3,Ground-Level Ozone,µg/m³,100,100,Photochemical reaction of NOx and VOCs in sunlight
+Benzene,Benzene,µg/m³,5,0,"Petroleum storage, vehicle refueling, industrial solvent"
+Toluene,Toluene,µg/m³,0,0,"Paints, thinners, vehicle exhaust, industrial printing"

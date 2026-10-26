@@ -1,0 +1,206 @@
+{
+  "config": "{\"version\":\"5.50\",\"themeCollection\":{\"baseTheme\":{\"name\":\"CY24SU02\",\"version\":\"5.50\",\"type\":2}},\"activeSectionIndex\":0,\"defaultDrillFilterOtherVisuals\":true,\"settings\":{\"useNewFilterPaneExperience\":true,\"allowChangeFilterTypes\":true}}",
+  "layoutOptimization": 0,
+  "sections": [
+    {
+      "name": "ReportSection1_Executive",
+      "displayName": "Executive Overview",
+      "filters": "[]",
+      "ordinal": 0,
+      "width": 1280.0,
+      "height": 720.0,
+      "visualContainers": [
+        {
+          "x": 20.0,
+          "y": 15.0,
+          "width": 1240.0,
+          "height": 55.0,
+          "z": 1.0,
+          "config": "{\"name\":\"HeaderTitle\",\"layouts\":[{\"id\":0,\"position\":{\"x\":20.0,\"y\":15.0,\"width\":1240.0,\"height\":55.0,\"z\":1.0}}],\"singleVisual\":{\"visualType\":\"textbox\",\"general\":{\"title\":{\"show\":false}},\"objects\":{\"general\":[{\"properties\":{\"paragraphs\":[{\"textRuns\":[{\"value\":\"National Air Quality & Pollution Index (2015 - 2020)\",\"textStyle\":{\"fontFamily\":\"Segoe UI Semibold\",\"fontSize\":\"20pt\",\"color\":\"#1A2530\"}}]}]}}]}}}"
+        },
+        {
+          "x": 20.0,
+          "y": 80.0,
+          "width": 230.0,
+          "height": 100.0,
+          "z": 2.0,
+          "config": "{\"name\":\"Card_AvgAQI\",\"singleVisual\":{\"visualType\":\"card\",\"projections\":{\"Values\":[{\"queryRef\":\"Fact_Daily_Readings.Average AQI\"}]}}}"
+        },
+        {
+          "x": 265.0,
+          "y": 80.0,
+          "width": 230.0,
+          "height": 100.0,
+          "z": 3.0,
+          "config": "{\"name\":\"Card_TotalReadings\",\"singleVisual\":{\"visualType\":\"card\",\"projections\":{\"Values\":[{\"queryRef\":\"Fact_Daily_Readings.Total Readings\"}]}}}"
+        },
+        {
+          "x": 510.0,
+          "y": 80.0,
+          "width": 230.0,
+          "height": 100.0,
+          "z": 4.0,
+          "config": "{\"name\":\"Card_CitiesMonitored\",\"singleVisual\":{\"visualType\":\"card\",\"projections\":{\"Values\":[{\"queryRef\":\"Fact_Daily_Readings.Total Cities Monitored\"}]}}}"
+        },
+        {
+          "x": 755.0,
+          "y": 80.0,
+          "width": 230.0,
+          "height": 100.0,
+          "z": 5.0,
+          "config": "{\"name\":\"Card_NAAQSExceed\",\"singleVisual\":{\"visualType\":\"card\",\"projections\":{\"Values\":[{\"queryRef\":\"Fact_Daily_Readings.% NAAQS Exceedance Rate\"}]}}}"
+        },
+        {
+          "x": 1000.0,
+          "y": 80.0,
+          "width": 260.0,
+          "height": 100.0,
+          "z": 6.0,
+          "config": "{\"name\":\"Card_SevereDays\",\"singleVisual\":{\"visualType\":\"card\",\"projections\":{\"Values\":[{\"queryRef\":\"Fact_Daily_Readings.% Hazardous Days\"}]}}}"
+        },
+        {
+          "x": 20.0,
+          "y": 195.0,
+          "width": 480.0,
+          "height": 250.0,
+          "z": 7.0,
+          "config": "{\"name\":\"Donut_CategoryBreakdown\",\"singleVisual\":{\"visualType\":\"donutChart\",\"projections\":{\"Category\":[{\"queryRef\":\"Dim_AQI_Category.Category_Name\"}],\"Y\":[{\"queryRef\":\"Fact_Daily_Readings.Total Readings\"}]}}}"
+        },
+        {
+          "x": 520.0,
+          "y": 195.0,
+          "width": 740.0,
+          "height": 250.0,
+          "z": 8.0,
+          "config": "{\"name\":\"Bar_TopPollutedCities\",\"singleVisual\":{\"visualType\":\"barChart\",\"projections\":{\"Category\":[{\"queryRef\":\"Dim_City.City\"}],\"Y\":[{\"queryRef\":\"Fact_Daily_Readings.Average AQI\"}]}}}"
+        },
+        {
+          "x": 20.0,
+          "y": 460.0,
+          "width": 1240.0,
+          "height": 240.0,
+          "z": 9.0,
+          "config": "{\"name\":\"Line_YearlyTrend\",\"singleVisual\":{\"visualType\":\"lineChart\",\"projections\":{\"Category\":[{\"queryRef\":\"Dim_Date.Year_Month\"}],\"Y\":[{\"queryRef\":\"Fact_Daily_Readings.Average AQI\"}]}}}"
+        }
+      ]
+    },
+    {
+      "name": "ReportSection2_Geographical",
+      "displayName": "Geographical & Regional",
+      "filters": "[]",
+      "ordinal": 1,
+      "width": 1280.0,
+      "height": 720.0,
+      "visualContainers": [
+        {
+          "x": 20.0,
+          "y": 20.0,
+          "width": 780.0,
+          "height": 680.0,
+          "z": 1.0,
+          "config": "{\"name\":\"Map_IndiaCities\",\"singleVisual\":{\"visualType\":\"map\",\"projections\":{\"Latitude\":[{\"queryRef\":\"Dim_City.Latitude\"}],\"Longitude\":[{\"queryRef\":\"Dim_City.Longitude\"}],\"Size\":[{\"queryRef\":\"Fact_Daily_Readings.Average AQI\"}],\"Legend\":[{\"queryRef\":\"Fact_Daily_Readings.AQI_Category\"}]}}}"
+        },
+        {
+          "x": 820.0,
+          "y": 20.0,
+          "width": 440.0,
+          "height": 330.0,
+          "z": 2.0,
+          "config": "{\"name\":\"Column_RegionalAQI\",\"singleVisual\":{\"visualType\":\"columnChart\",\"projections\":{\"Category\":[{\"queryRef\":\"Dim_City.Region\"}],\"Y\":[{\"queryRef\":\"Fact_Daily_Readings.Average AQI\"}]}}}"
+        },
+        {
+          "x": 820.0,
+          "y": 365.0,
+          "width": 440.0,
+          "height": 335.0,
+          "z": 3.0,
+          "config": "{\"name\":\"Table_StateRanking\",\"singleVisual\":{\"visualType\":\"tableEx\",\"projections\":{\"Values\":[{\"queryRef\":\"Dim_City.State\"},{\"queryRef\":\"Fact_Daily_Readings.Average AQI\"},{\"queryRef\":\"Fact_Daily_Readings.% Hazardous Days\"}]}}}"
+        }
+      ]
+    },
+    {
+      "name": "ReportSection3_Temporal",
+      "displayName": "Temporal & Seasonal Patterns",
+      "filters": "[]",
+      "ordinal": 2,
+      "width": 1280.0,
+      "height": 720.0,
+      "visualContainers": [
+        {
+          "x": 20.0,
+          "y": 20.0,
+          "width": 800.0,
+          "height": 330.0,
+          "z": 1.0,
+          "config": "{\"name\":\"Line_RollingAQI\",\"singleVisual\":{\"visualType\":\"lineChart\",\"projections\":{\"Category\":[{\"queryRef\":\"Dim_Date.Date\"}],\"Y\":[{\"queryRef\":\"Fact_Daily_Readings.Rolling_7Day_AQI\"},{\"queryRef\":\"Fact_Daily_Readings.Rolling_30Day_AQI\"}]}}}"
+        },
+        {
+          "x": 840.0,
+          "y": 20.0,
+          "width": 420.0,
+          "height": 330.0,
+          "z": 2.0,
+          "config": "{\"name\":\"Bar_SeasonalAQI\",\"singleVisual\":{\"visualType\":\"barChart\",\"projections\":{\"Category\":[{\"queryRef\":\"Dim_Date.Season\"}],\"Y\":[{\"queryRef\":\"Fact_Daily_Readings.Average AQI\"}]}}}"
+        },
+        {
+          "x": 20.0,
+          "y": 370.0,
+          "width": 600.0,
+          "height": 330.0,
+          "z": 3.0,
+          "config": "{\"name\":\"Column_StubbleBurning\",\"singleVisual\":{\"visualType\":\"columnChart\",\"projections\":{\"Category\":[{\"queryRef\":\"Dim_Date.Month_Name\"}],\"Y\":[{\"queryRef\":\"Fact_Daily_Readings.Average AQI\"}]}}}"
+        },
+        {
+          "x": 640.0,
+          "y": 370.0,
+          "width": 620.0,
+          "height": 330.0,
+          "z": 4.0,
+          "config": "{\"name\":\"Column_WeekdayVsWeekend\",\"singleVisual\":{\"visualType\":\"columnChart\",\"projections\":{\"Category\":[{\"queryRef\":\"Dim_Date.Day_Of_Week\"}],\"Y\":[{\"queryRef\":\"Fact_Daily_Readings.Average AQI\"}]}}}"
+        }
+      ]
+    },
+    {
+      "name": "ReportSection4_Lockdown",
+      "displayName": "COVID-19 Lockdown Impact",
+      "filters": "[]",
+      "ordinal": 3,
+      "width": 1280.0,
+      "height": 720.0,
+      "visualContainers": [
+        {
+          "x": 20.0,
+          "y": 20.0,
+          "width": 610.0,
+          "height": 320.0,
+          "z": 1.0,
+          "config": "{\"name\":\"Bar_LockdownReductionPct\",\"singleVisual\":{\"visualType\":\"barChart\",\"projections\":{\"Category\":[{\"queryRef\":\"Fact_Lockdown_Impact.City\"}],\"Y\":[{\"queryRef\":\"Fact_Lockdown_Impact.Pct_AQI_Reduction\"}]}}}"
+        },
+        {
+          "x": 650.0,
+          "y": 20.0,
+          "width": 610.0,
+          "height": 320.0,
+          "z": 2.0,
+          "config": "{\"name\":\"Column_PreVsLockdownAQI\",\"singleVisual\":{\"visualType\":\"columnChart\",\"projections\":{\"Category\":[{\"queryRef\":\"Fact_Lockdown_Impact.City\"}],\"Y\":[{\"queryRef\":\"Fact_Lockdown_Impact.Pre_Lockdown_AQI\"},{\"queryRef\":\"Fact_Lockdown_Impact.Lockdown_AQI\"}]}}}"
+        },
+        {
+          "x": 20.0,
+          "y": 360.0,
+          "width": 610.0,
+          "height": 340.0,
+          "z": 3.0,
+          "config": "{\"name\":\"Scatter_PM25VsNO2Drop\",\"singleVisual\":{\"visualType\":\"scatterChart\",\"projections\":{\"Details\":[{\"queryRef\":\"Fact_Lockdown_Impact.City\"}],\"X\":[{\"queryRef\":\"Fact_Lockdown_Impact.Pct_PM25_Drop\"}],\"Y\":[{\"queryRef\":\"Fact_Lockdown_Impact.Pct_NO2_Drop\"}]}}}"
+        },
+        {
+          "x": 650.0,
+          "y": 360.0,
+          "width": 610.0,
+          "height": 340.0,
+          "z": 4.0,
+          "config": "{\"name\":\"Table_LockdownSummary\",\"singleVisual\":{\"visualType\":\"tableEx\",\"projections\":{\"Values\":[{\"queryRef\":\"Fact_Lockdown_Impact.City\"},{\"queryRef\":\"Fact_Lockdown_Impact.Pre_Lockdown_AQI\"},{\"queryRef\":\"Fact_Lockdown_Impact.Lockdown_AQI\"},{\"queryRef\":\"Fact_Lockdown_Impact.Pct_AQI_Reduction\"},{\"queryRef\":\"Fact_Lockdown_Impact.Pct_PM25_Drop\"},{\"queryRef\":\"Fact_Lockdown_Impact.Pct_NO2_Drop\"}]}}}"
+        }
+      ]
+    }
+  ]
+}

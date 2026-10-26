@@ -1,0 +1,7 @@
+Category_Key,Category_Name,AQI_Min,AQI_Max,Color_Hex,Health_Impact
+1,Good,0,50,#00E400,Minimal health impact; clean and safe air.
+2,Satisfactory,51,100,#92D050,Minor breathing discomfort to sensitive people.
+3,Moderate,101,200,#FFFF00,"Breathing discomfort to people with lungs, asthma, and heart diseases."
+4,Poor,201,300,#FF7E00,Breathing discomfort to most people on prolonged exposure.
+5,Very Poor,301,400,#FF0000,Respiratory illness on prolonged exposure.
+6,Severe,401,1000,#7E0023,Affects healthy people and seriously impacts those with existing diseases.
